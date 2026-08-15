@@ -1,0 +1,26 @@
+<section class="chat-section">
+
+    <h2>Ask Your Document</h2>
+
+    <textarea [(ngModel)]="question" placeholder="Ask something about your document..." rows="4">
+  </textarea>
+
+    <button type="button" (click)="ask()" [disabled]="!question.trim() || asking">
+
+        {{ asking ? 'Thinking...' : 'Ask' }}
+
+    </button>
+
+    @if (answer) {
+
+    <div class="answer">
+
+        <h3>Answer</h3>
+
+        <p>{{ answer }}</p>
+
+    </div>
+
+    }
+
+</section>

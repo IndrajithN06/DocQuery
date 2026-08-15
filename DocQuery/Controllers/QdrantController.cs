@@ -30,6 +30,17 @@ public class QdrantController : ControllerBase
         });
     }
 
+    [HttpDelete("reset")]
+    public async Task<IActionResult> Reset()
+    {
+        await _qdrantService.ResetCollectionAsync();
+
+        return Ok(new
+        {
+            message = "Qdrant collection reset successfully."
+        });
+    }
+
     [HttpPost("insert")]
     public async Task<IActionResult> Insert()
     {

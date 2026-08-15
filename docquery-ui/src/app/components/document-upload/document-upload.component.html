@@ -1,0 +1,36 @@
+<section class="card">
+
+    <div class="section-header">
+        <h2>Upload Document</h2>
+        <p>Upload a PDF to start asking questions.</p>
+    </div>
+
+    <div class="upload-area">
+
+        <input #fileInput type="file" accept=".pdf" (change)="onFileSelected($event)" hidden />
+
+        <button type="button" class="choose-button" (click)="fileInput.click()">
+
+            Choose PDF
+
+        </button>
+
+        @if (selectedFile) {
+        <span class="file-name">
+            {{ selectedFile.name }}
+        </span>
+        }
+
+    </div>
+
+    <button type="button" class="upload-button" (click)="upload()" [disabled]="!selectedFile || uploading">
+
+        {{ uploading ? 'Uploading...' : 'Upload Document' }}
+
+    </button>
+
+    @if (message) {
+    <p class="status">{{ message }}</p>
+    }
+
+</section>

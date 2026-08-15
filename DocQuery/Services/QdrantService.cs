@@ -33,6 +33,19 @@ public class QdrantService
             });
     }
 
+    public async Task ResetCollectionAsync()
+    {
+        await _client.DeleteCollectionAsync(CollectionName);
+
+        await _client.CreateCollectionAsync(
+            CollectionName,
+            new VectorParams
+            {
+                Size = 768,
+                Distance = Distance.Cosine
+            });
+    }
+
     public async Task InsertDocumentAsync(
     ulong id,
     float[] embedding,

@@ -9,3 +9,11 @@ obj/
 .env.*
 
 Documents/
+
+.DS_Store
+Thumbs.db
+# Angular
+node_modules/
+.angular/
+dist/
+
