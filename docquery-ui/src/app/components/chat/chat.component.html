@@ -3,7 +3,7 @@
     <h2>Ask Your Document</h2>
 
     <textarea [(ngModel)]="question" placeholder="Ask something about your document..." rows="4">
-  </textarea>
+    </textarea>
 
     <button type="button" (click)="ask()" [disabled]="!question.trim() || asking">
 
@@ -18,6 +18,34 @@
         <h3>Answer</h3>
 
         <p>{{ answer }}</p>
+
+        @if (sources.length > 0) {
+
+        <div class="sources">
+
+            <h3>Sources</h3>
+
+            @for (source of sources; track $index) {
+
+            <div class="source">
+
+                <p>
+                    <strong>Document:</strong>
+                    {{ source.document }}
+                </p>
+
+                <p>
+                    <strong>Page:</strong>
+                    {{ source.pageNumber }}
+                </p>
+
+            </div>
+
+            }
+
+        </div>
+
+        }
 
     </div>
 

@@ -1,5 +1,5 @@
 ﻿using DocQuery.Services;
-
+using DocQuery.Models;
 namespace DocQuery.Services;
 
 public class RagService
@@ -15,7 +15,7 @@ public class RagService
         _qdrantService = qdrantService;
     }
 
-    public async Task<string> AskAsync(string question)
+    public async Task<RagResponse> AskAsync(string question, string documentId)
     {
         // 1. Convert question into embedding
         var queryEmbedding =
@@ -25,13 +25,15 @@ public class RagService
         var searchResults =
             await _qdrantService.SearchAsync(
                 queryEmbedding,
-                3);
+                3,
+                documentId);
 
         // 3. Build context from retrieved chunks
         var context = string.Join(
             "\n\n",
             searchResults.Select(result =>
                 $"Document: {result.Document}\n" +
+                $"Page: {result.PageNumber}\n" +
                 $"Content: {result.Text}"));
 
         // 4. Build prompt for Qwen
@@ -55,7 +57,13 @@ public class RagService
         // 5. Send context + question to Qwen
         var answer =
             await _ollamaService.GenerateAsync(prompt);
+        var sources=searchResults.Select(result => new RagSource
+        {
+            Document = result.Document,
+            PageNumber = result.PageNumber
+        }).DistinctBy(source => new { source.Document, source.PageNumber })
+         .ToList();
 
-        return answer;
+        return new RagResponse { Answer = answer, Sources = sources };
     }
 }

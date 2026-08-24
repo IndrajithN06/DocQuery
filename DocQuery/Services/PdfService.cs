@@ -1,19 +1,21 @@
-﻿using UglyToad.PdfPig;
+﻿using DocQuery.Models;
+using UglyToad.PdfPig;
 
 namespace DocQuery.Services;
 
 public class PdfService
 {
-    public string ExtractText(Stream pdfStream)
+    public List<PdfPageContent> ExtractPages(Stream pdfStream)
     {
         using var document = PdfDocument.Open(pdfStream);
 
-        var pages = document.GetPages();
-
-        var text = string.Join(
-            Environment.NewLine + Environment.NewLine,
-            pages.Select(page => page.Text));
-
-        return text;
+        return document
+            .GetPages()
+            .Select(page=>new PdfPageContent
+            {
+            PageNumber = page.Number,
+            Text= page.Text
+            })
+            .ToList();
     }
 }

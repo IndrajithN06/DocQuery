@@ -18,13 +18,13 @@ public class RagController : ControllerBase
     public async Task<IActionResult> Ask(
         [FromBody] RagRequest request)
     {
-        var answer =
-            await _ragService.AskAsync(request.Question);
+        var answer =await _ragService.AskAsync(request.Question, request.DocumentId);
 
         return Ok(new
         {
             question = request.Question,
-            answer
+            answer.Answer,
+            answer.Sources
         });
     }
 }
@@ -32,4 +32,5 @@ public class RagController : ControllerBase
 public class RagRequest
 {
     public string Question { get; set; } = string.Empty;
+    public string DocumentId { get; set; } = string.Empty;
 }

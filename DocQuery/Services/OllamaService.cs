@@ -32,7 +32,7 @@ public class OllamaService
         return result?.Response ?? string.Empty;
     }
 
-    public async Task<float[]> GenerateEmbeddingAsync(string text)
+    public async Task<float[]> GenerateEmbeddingAsync(string text) 
     {
         var request = new
         {

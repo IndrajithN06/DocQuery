@@ -41,32 +41,6 @@ public class QdrantController : ControllerBase
         });
     }
 
-    [HttpPost("insert")]
-    public async Task<IActionResult> Insert()
-    {
-        const string text =
-            "Employees receive 20 days of annual leave.";
-
-        const string documentName =
-            "employee-policy.txt";
-
-        var embedding =
-            await _ollamaService.GenerateEmbeddingAsync(text);
-
-        await _qdrantService.InsertDocumentAsync(
-            1,
-            embedding,
-            text,
-            documentName);
-
-        return Ok(new
-        {
-            id = 1,
-            text,
-            dimensions = embedding.Length,
-            message = "Document embedding inserted into Qdrant."
-        });
-    }
 
     [HttpPost("search")]
     public async Task<IActionResult> Search(

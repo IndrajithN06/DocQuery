@@ -50,7 +50,9 @@ public class QdrantService
     ulong id,
     float[] embedding,
     string text,
-    string documentName)
+    string documentName,
+    int pageNumber,
+    Guid documentId)
     {
         var point = new PointStruct
         {
@@ -62,7 +64,9 @@ public class QdrantService
             Payload =
         {
             ["text"] = text,
-            ["document"] = documentName
+            ["document"] = documentName,
+            ["pageNumber"]= pageNumber,
+            ["documentId"]= documentId.ToString()
         }
         };
 
@@ -74,13 +78,79 @@ public class QdrantService
             });
     }
 
+
+    public async Task<List<DocumentList>> GetAllDocumentsAsync()
+    {
+        var uniqueDocuments = new Dictionary<string, string>();
+
+        PointId offset = default;
+
+        while (true)
+        {
+            var result = await _client.ScrollAsync(
+                collectionName: CollectionName,
+                limit: 100,
+                offset: offset
+            );
+
+            foreach (var point in result.Result)
+            {
+                if (point.Payload.TryGetValue("document", out var documentValue) &&
+                    point.Payload.TryGetValue("documentId", out var documentIdValue))
+                {
+                    var documentName = documentValue.StringValue;
+                    var documentId = documentIdValue.StringValue;
+
+                    if (!uniqueDocuments.ContainsKey(documentId))
+                    {
+                        uniqueDocuments[documentId] = documentName;
+                    }
+                }
+            }
+
+            if (result.NextPageOffset == null)
+            {
+                break;
+            }
+
+            offset = result.NextPageOffset;
+        }
+
+        return uniqueDocuments
+            .Select(kvp => new DocumentList
+            {
+                DocumentId = kvp.Key,
+                DocumentName = kvp.Value
+            })
+            .ToList();
+    }
     public async Task<List<SearchResult>> SearchAsync(
         float[] queryEmbedding,
-        ulong limit = 3)
+        ulong limit = 3,
+        string documentId = "")
     {
+        var filter = new Filter
+        {
+            Must =
+        {
+            new Condition
+            {
+                Field = new FieldCondition
+                {
+                    Key = "documentId",
+                    Match = new Match
+                    {
+                        Keyword = documentId
+                    }
+                }
+            }
+        }
+        };
+
         var results = await _client.SearchAsync(
             CollectionName,
             queryEmbedding,
+            filter: filter,
             limit: limit);
 
         return results
@@ -94,11 +164,18 @@ public class QdrantService
                     ? documentValue.StringValue
                     : string.Empty;
 
+                var pageNumber = result.Payload.TryGetValue(
+                    "pageNumber",
+                    out var pageNumberValue)
+                    ? pageNumberValue.IntegerValue
+                    : 0;
+
                 return new SearchResult
                 {
                     Text = text,
                     Document = document,
-                    Score = result.Score
+                    Score = result.Score,
+                    PageNumber = (int)pageNumber
                 };
             })
             .ToList();

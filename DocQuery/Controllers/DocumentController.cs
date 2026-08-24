@@ -38,32 +38,47 @@ public class DocumentController : ControllerBase
 
         using var stream = file.OpenReadStream();
 
-        // 1. Extract text
-        var text = _pdfService.ExtractText(stream);
+        // 1. Extract pages
+        var pages = _pdfService.ExtractPages(stream);
 
-        // 2. Split text into chunks
-        var chunks = _textChunker.ChunkText(text);
+        // 2. Split pages into chunks
+        var chunks = _textChunker.ChunkPages(pages);
 
-        // 3. Generate embedding and store each chunk
+        var startId = (ulong)DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
+        Guid documentId = Guid.NewGuid();
+
+        // 3. Generate embeddings and store each chunk
         for (var i = 0; i < chunks.Count; i++)
         {
             var chunk = chunks[i];
 
             var embedding =
-                await _ollamaService.GenerateEmbeddingAsync(chunk);
+                await _ollamaService.GenerateEmbeddingAsync(chunk.Text);
 
             await _qdrantService.InsertDocumentAsync(
-                id: (ulong)(i + 1),
+                id: startId + (ulong)i,
                 embedding: embedding,
-                text: chunk,
-                documentName: file.FileName);
+                text: chunk.Text,
+                documentName: file.FileName,
+                pageNumber: chunk.PageNumber,
+                documentId: documentId
+                );
         }
 
         return Ok(new
         {
             fileName = file.FileName,
             chunkCount = chunks.Count,
-            message = "Document uploaded and indexed successfully."
+            message = "Document uploaded and indexed successfully.",
+            documentId= documentId.ToString()
         });
+    }
+
+    [HttpGet("list-documents")]
+    public async Task<IActionResult> List()
+    {
+        var documents = await _qdrantService.GetAllDocumentsAsync();
+        return Ok(documents);
     }
 }

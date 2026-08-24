@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { DocqueryApiService } from '../../services/docquery-api.service';
+import { documentlist } from '../../models/documentlist.model';
+import { DocumentStateService } from '../../services/document-state.service';
 
 @Component({
   selector: 'app-document-upload',
@@ -12,8 +14,20 @@ export class DocumentUploadComponent {
   selectedFile: File | null = null;
   uploading = false;
   message = '';
+  documentList: documentlist[] = [];
 
-  constructor(private api: DocqueryApiService) { }
+
+
+
+  constructor(private api: DocqueryApiService, public documentState: DocumentStateService) { }
+
+  ngOnInit(): void {
+    this.api.getDocumentList().subscribe({
+      next: documentList => {
+        this.documentList = documentList;
+      }
+    });
+  }
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -39,7 +53,8 @@ export class DocumentUploadComponent {
 
         this.message =
           `${response.fileName} uploaded successfully. ` +
-          `${response.chunkCount} chunks indexed.`;
+          `${response.chunkCount} chunks indexed.` +
+          `${response.documentId} Document ID.`;
       },
       error: error => {
         this.uploading = false;
@@ -48,5 +63,10 @@ export class DocumentUploadComponent {
         this.message = 'Upload failed.';
       }
     });
+  }
+
+  selectDocument(document: documentlist): void {
+    this.documentState.selectedDocumentId.set(document.documentId);
+
   }
 }

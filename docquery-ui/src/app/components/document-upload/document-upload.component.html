@@ -1,36 +1,232 @@
-<section class="card">
+<div class="workspace">
 
-    <div class="section-header">
-        <h2>Upload Document</h2>
-        <p>Upload a PDF to start asking questions.</p>
-    </div>
+    <!-- Sidebar -->
+    <aside class="sidebar">
 
-    <div class="upload-area">
+        <div class="brand">
+            <div class="brand-icon">✦</div>
 
-        <input #fileInput type="file" accept=".pdf" (change)="onFileSelected($event)" hidden />
+            <div>
+                <h1>DocQuery</h1>
+                <span>AI Document Workspace</span>
+            </div>
+        </div>
 
-        <button type="button" class="choose-button" (click)="fileInput.click()">
+        <div class="documents-header">
+            <div>
+                <h2>Your Documents</h2>
+                <span>{{ documentList.length }} documents</span>
+            </div>
+        </div>
 
-            Choose PDF
+        <div class="document-list">
 
-        </button>
+            @for (document of documentList; track document.documentId) {
 
-        @if (selectedFile) {
-        <span class="file-name">
-            {{ selectedFile.name }}
-        </span>
-        }
+            <button type="button" class="document-item" (click)="selectDocument(document)"
+                [class.selected]="document.documentId === documentState.selectedDocumentId()">
 
-    </div>
+                <div class="document-icon">
+                    <span>PDF</span>
+                </div>
 
-    <button type="button" class="upload-button" (click)="upload()" [disabled]="!selectedFile || uploading">
+                <div class="document-info">
+                    <strong>{{ document.documentName }}</strong>
+                    <span>PDF document</span>
+                </div>
 
-        {{ uploading ? 'Uploading...' : 'Upload Document' }}
+                <div class="document-arrow">
+                    →
+                </div>
 
-    </button>
+            </button>
 
-    @if (message) {
-    <p class="status">{{ message }}</p>
-    }
+            }
 
-</section>
+            @if (documentList.length === 0) {
+
+            <div class="empty-documents">
+
+                <div class="empty-icon">
+                    ◇
+                </div>
+
+                <p>No documents yet</p>
+
+                <span>
+                    Upload your first PDF to get started.
+                </span>
+
+            </div>
+
+            }
+
+        </div>
+
+    </aside>
+
+
+    <!-- Main content -->
+    <main class="main-content">
+
+        <div class="topbar">
+
+            <div>
+                <span class="eyebrow">DOCUMENT LIBRARY</span>
+
+                <h2>Upload a document</h2>
+
+                <p>
+                    Add a PDF and start exploring it with AI.
+                </p>
+            </div>
+
+            <div class="status-pill">
+                <span class="status-dot"></span>
+                RAG Ready
+            </div>
+
+        </div>
+
+
+        <section class="upload-card">
+
+            <div class="upload-heading">
+
+                <div class="upload-heading-icon">
+                    ↑
+                </div>
+
+                <div>
+                    <h3>Add a new PDF</h3>
+
+                    <p>
+                        Your document will be processed and indexed
+                        for semantic search.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="upload-area">
+
+                <input #fileInput type="file" accept=".pdf" (change)="onFileSelected($event)" hidden />
+
+                <div class="upload-cloud">
+                    ↑
+                </div>
+
+                <h3>Choose your PDF</h3>
+
+                <p>
+                    Select a PDF from your computer to add it
+                    to your document library.
+                </p>
+
+                <button type="button" class="choose-button" (click)="fileInput.click()">
+
+                    Choose PDF
+
+                </button>
+
+                @if (selectedFile) {
+
+                <div class="selected-file">
+
+                    <div class="selected-file-icon">
+                        PDF
+                    </div>
+
+                    <div class="selected-file-info">
+                        <strong>{{ selectedFile.name }}</strong>
+                        <span>Ready to upload</span>
+                    </div>
+
+                    <span class="check">
+                        ✓
+                    </span>
+
+                </div>
+
+                }
+
+            </div>
+
+
+            <div class="upload-footer">
+
+                <div class="upload-hint">
+                    <span>ⓘ</span>
+                    PDF files only
+                </div>
+
+                <button type="button" class="upload-button" (click)="upload()" [disabled]="!selectedFile || uploading">
+
+                    @if (uploading) {
+                    <span class="spinner"></span>
+                    Processing...
+                    } @else {
+                    Upload document
+                    <span>→</span>
+                    }
+
+                </button>
+
+            </div>
+
+
+            @if (message) {
+
+            <div class="status-message">
+
+                <span>✓</span>
+
+                <p>{{ message }}</p>
+
+            </div>
+
+            }
+
+        </section>
+
+
+        <div class="info-grid">
+
+            <div class="info-card">
+                <span class="info-number">01</span>
+
+                <h4>Upload</h4>
+
+                <p>
+                    Add your PDF document to the workspace.
+                </p>
+            </div>
+
+            <div class="info-card">
+                <span class="info-number">02</span>
+
+                <h4>Index</h4>
+
+                <p>
+                    Your document is converted into searchable
+                    knowledge.
+                </p>
+            </div>
+
+            <div class="info-card">
+                <span class="info-number">03</span>
+
+                <h4>Ask</h4>
+
+                <p>
+                    Ask questions and get answers grounded in
+                    your document.
+                </p>
+            </div>
+
+        </div>
+
+    </main>
+
+</div>

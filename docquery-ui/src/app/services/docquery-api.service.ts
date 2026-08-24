@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { ChatResponse } from '../models/chat-response.model';
+import { documentlist } from '../models/documentlist.model';
+
 
 @Injectable({
   providedIn: 'root'
@@ -22,11 +25,17 @@ export class DocqueryApiService {
     );
   }
 
-  askQuestion(question: string): Observable<any> {
-    return this.http.post(
+  getDocumentList(): Observable<documentlist[]> {
+    return this.http.get<documentlist[]>(
+      `${this.apiUrl}/Document/list-documents`
+    );
+  }
+
+  askQuestion(question: string, documentId: string | null): Observable<ChatResponse> {
+    return this.http.post<ChatResponse>(
       `${this.apiUrl}/Rag/ask`,
       {
-        question
+        question, documentId
       }
     );
   }
