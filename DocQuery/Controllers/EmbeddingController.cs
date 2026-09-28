@@ -7,11 +7,11 @@ namespace DocQuery.Controllers;
 [Route("api/[controller]")]
 public class EmbeddingController : ControllerBase
 {
-    private readonly OllamaService _ollamaService;
+    private readonly ILlmService _llmService;
 
-    public EmbeddingController(OllamaService ollamaService)
+    public EmbeddingController(ILlmService llmService)
     {
-        _ollamaService = ollamaService;
+        _llmService = llmService;
     }
 
     [HttpPost]
@@ -19,7 +19,7 @@ public class EmbeddingController : ControllerBase
         [FromBody] EmbeddingRequest request)
     {
         var embedding =
-            await _ollamaService.GenerateEmbeddingAsync(request.Text);
+            await _llmService.GenerateEmbeddingAsync(request.Text);
 
         return Ok(new
         {

@@ -16,9 +16,8 @@ public class QdrantService
         var apiKey = config["Qdrant:ApiKey"];
         var useHttps = config.GetValue<bool>("Qdrant:UseHttps");
 
-        _client = string.IsNullOrEmpty(apiKey)
-            ? new QdrantClient(host, 6334)                                  // local, no auth
-            : new QdrantClient(host, 6334, https: useHttps, apiKey: apiKey);
+       _client = new QdrantClient(host, 6334, https: useHttps,
+       apiKey: string.IsNullOrEmpty(apiKey) ? null : apiKey);
     }
 
     public async Task CreateCollectionAsync()

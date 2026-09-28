@@ -8,14 +8,14 @@ namespace DocQuery.Controllers;
 public class QdrantController : ControllerBase
 {
     private readonly QdrantService _qdrantService;
-    private readonly OllamaService _ollamaService;
+    private readonly ILlmService _llmService;
 
     public QdrantController(
         QdrantService qdrantService,
-        OllamaService ollamaService)
+        ILlmService llmService)
     {
         _qdrantService = qdrantService;
-        _ollamaService = ollamaService;
+        _llmService = llmService;
     }
 
     [HttpPost("create-collection")]
@@ -47,7 +47,7 @@ public class QdrantController : ControllerBase
     [FromBody] SearchRequest request)
     {
         var queryEmbedding =
-            await _ollamaService.GenerateEmbeddingAsync(request.Query);
+            await _llmService.GenerateEmbeddingAsync(request.Query);
 
         var results =
             await _qdrantService.SearchAsync(
