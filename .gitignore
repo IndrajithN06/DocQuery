@@ -17,3 +17,5 @@ node_modules/
 .angular/
 dist/
 
+
+appsettings.Production.json

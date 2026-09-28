@@ -2,7 +2,7 @@
 
 namespace DocQuery.Services;
 
-public class OllamaService
+public class OllamaService : ILlmService
 {
     private readonly HttpClient _httpClient;
 

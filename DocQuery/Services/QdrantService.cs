@@ -10,9 +10,15 @@ public class QdrantService
 
     private const string CollectionName = "docquery_documents";
 
-    public QdrantService()
+    public QdrantService(IConfiguration config)
     {
-        _client = new QdrantClient("localhost", 6334);
+        var host = config["Qdrant:Host"] ?? "localhost";
+        var apiKey = config["Qdrant:ApiKey"];
+        var useHttps = config.GetValue<bool>("Qdrant:UseHttps");
+
+        _client = string.IsNullOrEmpty(apiKey)
+            ? new QdrantClient(host, 6334)                                  // local, no auth
+            : new QdrantClient(host, 6334, https: useHttps, apiKey: apiKey);
     }
 
     public async Task CreateCollectionAsync()

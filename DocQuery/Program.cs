@@ -18,10 +18,24 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.Services.AddHttpClient<OllamaService>(client =>
+
+if (builder.Environment.IsDevelopment())
 {
-    client.BaseAddress = new Uri("http://localhost:11434/");
-});
+    builder.Services.AddHttpClient<OllamaService>(client =>
+    {
+        client.BaseAddress = new Uri(builder.Configuration["Ollama:BaseUrl"] ?? "http://localhost:11434/");
+    });
+    builder.Services.AddScoped<ILlmService>(sp => sp.GetRequiredService<OllamaService>());
+}
+else
+{
+    builder.Services.AddHttpClient<GeminiService>(client =>
+    {
+        client.BaseAddress = new Uri("https://generativelanguage.googleapis.com/");
+    });
+    builder.Services.AddScoped<ILlmService>(sp => sp.GetRequiredService<GeminiService>());
+}
+
 builder.Services.AddSingleton<QdrantService>();
 builder.Services.AddScoped<RagService>();
 builder.Services.AddScoped<PdfService>();
