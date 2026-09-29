@@ -9,7 +9,7 @@ public class ChatController : ControllerBase
 {
     private readonly ILlmService _llmService;
 
-    public ChatController(OllamaService llmService)
+    public ChatController(ILlmService llmService)
     {
         _llmService = llmService;
     }

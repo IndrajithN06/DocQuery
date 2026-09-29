@@ -3,14 +3,14 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ChatResponse } from '../models/chat-response.model';
 import { documentlist } from '../models/documentlist.model';
-
+import { environment } from '../../../environment'
 
 @Injectable({
   providedIn: 'root'
 })
 export class DocqueryApiService {
 
-  private readonly apiUrl = 'https://localhost:7095/api';
+  private readonly apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) { }
 
