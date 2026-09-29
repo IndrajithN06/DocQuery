@@ -7,17 +7,17 @@ namespace DocQuery.Controllers;
 [Route("api/[controller]")]
 public class ChatController : ControllerBase
 {
-    private readonly OllamaService _ollamaService;
+    private readonly ILlmService _llmService;
 
-    public ChatController(OllamaService ollamaService)
+    public ChatController(ILlmService llmService)
     {
-        _ollamaService = ollamaService;
+        _llmService = llmService;
     }
 
     [HttpPost]
     public async Task<IActionResult> Chat([FromBody] ChatRequest request)
     {
-        var answer = await _ollamaService.GenerateAsync(request.Prompt);
+        var answer = await _llmService.GenerateAsync(request.Prompt);
 
         return Ok(new
         {

@@ -4,14 +4,14 @@ namespace DocQuery.Services;
 
 public class RagService
 {
-    private readonly OllamaService _ollamaService;
+    private readonly ILlmService _llmService;
     private readonly QdrantService _qdrantService;
 
     public RagService(
-        OllamaService ollamaService,
+        ILlmService llmService,
         QdrantService qdrantService)
     {
-        _ollamaService = ollamaService;
+        _llmService = llmService;
         _qdrantService = qdrantService;
     }
 
@@ -19,7 +19,7 @@ public class RagService
     {
         // 1. Convert question into embedding
         var queryEmbedding =
-            await _ollamaService.GenerateEmbeddingAsync(question);
+            await _llmService.GenerateEmbeddingAsync(question);
 
         // 2. Retrieve relevant chunks
         var searchResults =
@@ -56,7 +56,7 @@ public class RagService
 
         // 5. Send context + question to Qwen
         var answer =
-            await _ollamaService.GenerateAsync(prompt);
+            await _llmService.GenerateAsync(prompt);
         var sources=searchResults.Select(result => new RagSource
         {
             Document = result.Document,

@@ -10,27 +10,48 @@ public class QdrantService
 
     private const string CollectionName = "docquery_documents";
 
-    public QdrantService()
+    public QdrantService(IConfiguration config)
     {
-        _client = new QdrantClient("localhost", 6334);
+        var host = config["Qdrant:Host"] ?? "localhost";
+        var apiKey = config["Qdrant:ApiKey"];
+        var useHttps = config.GetValue<bool>("Qdrant:UseHttps");
+
+       _client = new QdrantClient(host, 6334, https: useHttps,
+       apiKey: string.IsNullOrEmpty(apiKey) ? null : apiKey);
+
     }
 
     public async Task CreateCollectionAsync()
     {
+        // Step 1: Check whether the collection exists
         var collections = await _client.ListCollectionsAsync();
 
-        if (collections.Contains(CollectionName))
+        if (!collections.Contains(CollectionName))
         {
-            return;
+            // Step 2: Create the collection if missing
+            await _client.CreateCollectionAsync(
+                CollectionName,
+                new VectorParams
+                {
+                    Size = 768,
+                    Distance = Distance.Cosine
+                });
         }
 
-        await _client.CreateCollectionAsync(
-            CollectionName,
-            new VectorParams
-            {
-                Size = 768,
-                Distance = Distance.Cosine
-            });
+        // Step 3: Get collection information
+        var collectionInfo =
+            await _client.GetCollectionInfoAsync(CollectionName);
+
+        // Step 4: Check whether the documentId index exists
+        if (!collectionInfo.PayloadSchema.ContainsKey("documentId"))
+        {
+            // Step 5: Create the index if missing
+            await _client.CreatePayloadIndexAsync(
+                CollectionName,
+                "documentId",
+                PayloadSchemaType.Keyword
+            );
+        }
     }
 
     public async Task ResetCollectionAsync()

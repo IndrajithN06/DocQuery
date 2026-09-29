@@ -10,15 +10,15 @@ public class DocumentController : ControllerBase
 {
     private readonly PdfService _pdfService;
     private readonly TextChunker _textChunker;
-    private readonly OllamaService _ollamaService;
+    private readonly ILlmService _llmService;
     private readonly QdrantService _qdrantService;
 
-    public DocumentController(PdfService pdfService ,TextChunker textChunker,QdrantService qdrantService,OllamaService ollamaservice)
+    public DocumentController(PdfService pdfService ,TextChunker textChunker,QdrantService qdrantService, ILlmService llmService)
     {
         _pdfService = pdfService;
         _textChunker=textChunker;
         _qdrantService = qdrantService;
-        _ollamaService = ollamaservice;
+        _llmService = llmService;
 
     }
 
@@ -54,7 +54,7 @@ public class DocumentController : ControllerBase
             var chunk = chunks[i];
 
             var embedding =
-                await _ollamaService.GenerateEmbeddingAsync(chunk.Text);
+                await _llmService.GenerateEmbeddingAsync(chunk.Text);
 
             await _qdrantService.InsertDocumentAsync(
                 id: startId + (ulong)i,
