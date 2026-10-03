@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ChatResponse } from '../models/chat-response.model';
 import { documentlist } from '../models/documentlist.model';
-import { environment } from '../../../environment'
+import { environment } from '../../../environment.development';
 
 @Injectable({
   providedIn: 'root'
