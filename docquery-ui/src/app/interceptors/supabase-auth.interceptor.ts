@@ -3,7 +3,7 @@ import { inject } from '@angular/core';
 import { from } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
-import { environment } from '../../../environment.development';
+import { environment } from '../../../environment';
 import { SupabaseService } from '../services/auth-services/supabase.service';
 
 /** Adds the Supabase access token only to requests made to this application's API. */
