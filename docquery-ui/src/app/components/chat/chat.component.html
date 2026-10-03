@@ -1,54 +1,18 @@
 <section class="chat-section">
-
-    <h2>Ask Your Document</h2>
-
-    <textarea [(ngModel)]="question" placeholder="Ask something about your document..." rows="4">
-    </textarea>
-
-    <button type="button" (click)="ask()" [disabled]="!question.trim() || asking">
-
-        {{ asking ? 'Thinking...' : 'Ask' }}
-
-    </button>
-
-    @if (answer) {
-
-    <div class="answer">
-
-        <h3>Answer</h3>
-
-        <p>{{ answer }}</p>
-
-        @if (sources.length > 0) {
-
-        <div class="sources">
-
-            <h3>Sources</h3>
-
-            @for (source of sources; track $index) {
-
-            <div class="source">
-
-                <p>
-                    <strong>Document:</strong>
-                    {{ source.document }}
-                </p>
-
-                <p>
-                    <strong>Page:</strong>
-                    {{ source.pageNumber }}
-                </p>
-
-            </div>
-
-            }
-
-        </div>
-
-        }
-
+    <div class="chat-header">
+        <div class="chat-title"><span class="chat-icon">✦</span><div><span class="eyebrow">ASK YOUR KNOWLEDGE BASE</span><h2>What would you like to know?</h2><p class="chat-subtitle">Answers are grounded in the document you select.</p></div></div>
+        @if (documentState.selectedDocumentId()) { <span class="selected-document"><span class="selected-document-icon">PDF</span> Document selected <b>•</b></span> }
     </div>
-
+    @if (!documentState.selectedDocumentId()) {
+        <div class="empty-chat"><span class="empty-chat-icon">⌁</span><h3>Select a document to begin</h3><p>Choose a PDF from your library, then ask a question about its contents.</p></div>
+    } @else {
+        <div class="question-container"><textarea [(ngModel)]="question" placeholder="Ask a question about your document..." rows="4" aria-label="Question"></textarea></div>
+        <div class="question-footer"><span class="question-hint"><span>↳</span> Answers are generated from your selected document</span><button type="button" (click)="ask()" [disabled]="!question.trim() || asking">@if (asking) { <span class="loading-spinner"></span> Thinking } @else { Ask question <span>→</span> }</button></div>
+        @if (asking) { <div class="loading"><span class="loading-spinner"></span><span>Reading your document and preparing an answer...</span></div> }
+        @if (answer && !asking) {
+            <div class="answer"><div class="answer-header"><span class="answer-icon">✦</span><h3>Answer</h3></div><p>{{ answer }}</p>
+                @if (sources.length > 0) { <div class="sources"><h3>Sources <span class="sources-count">{{ sources.length }}</span></h3>@for (source of sources; track $index) { <div class="source"><div class="source-header"><span class="source-page">Page {{ source.pageNumber }}</span><span class="source-document">{{ source.document }}</span></div></div> }</div> }
+            </div>
+        }
     }
-
 </section>

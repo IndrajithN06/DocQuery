@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { DocumentUploadComponent } from '../document-upload/document-upload.component';
 import { ChatComponent } from '../chat/chat.component';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { SupabaseService } from '../../services/auth-services/supabase.service';
 
 @Component({
@@ -9,7 +9,8 @@ import { SupabaseService } from '../../services/auth-services/supabase.service';
   standalone: true,
   imports: [
     DocumentUploadComponent,
-    ChatComponent
+    ChatComponent,
+    RouterLink
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'

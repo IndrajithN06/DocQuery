@@ -1,9 +1,36 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using DocQuery.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+var supabaseUrl = builder.Configuration["Supabase:Url"]
+    ?? throw new InvalidOperationException("Supabase:Url is not configured.");
+var supabaseJwtAudience = builder.Configuration["Supabase:JwtAudience"] ?? "authenticated";
+
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        // Supabase publishes signing keys through its OIDC discovery document/JWKS endpoint.
+        // This validates access tokens without handling or storing a Supabase secret key.
+        options.Authority = $"{supabaseUrl.TrimEnd('/')}/auth/v1";
+        options.Audience = supabaseJwtAudience;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = $"{supabaseUrl.TrimEnd('/')}/auth/v1",
+            ValidateAudience = true,
+            ValidAudience = supabaseJwtAudience,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            NameClaimType = "sub"
+        };
+    });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -59,6 +86,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("Angular");
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

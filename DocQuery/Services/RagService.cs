@@ -15,7 +15,7 @@ public class RagService
         _qdrantService = qdrantService;
     }
 
-    public async Task<RagResponse> AskAsync(string question, string documentId)
+    public async Task<RagResponse> AskAsync(string question, string documentId, string userId)
     {
         // 1. Convert question into embedding
         var queryEmbedding =
@@ -26,7 +26,8 @@ public class RagService
             await _qdrantService.SearchAsync(
                 queryEmbedding,
                 3,
-                documentId);
+                documentId,
+                userId);
 
         // 3. Build context from retrieved chunks
         var context = string.Join(

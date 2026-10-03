@@ -1,276 +1,30 @@
-/* =========================================================
-   APP SHELL
-========================================================= */
-
-:host {
-    display: block;
-    width: 100%;
-    min-height: 100vh;
-
-    margin: 0;
-    padding: 0;
-
-    font-family:
-        Inter,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
-
-    color: #111827;
-}
-
-*,
-*::before,
-*::after {
-    box-sizing: border-box;
-}
-
-
-/* =========================================================
-   APPLICATION SHELL
-========================================================= */
-
-.app-shell {
-    width: 100%;
-    min-height: 100vh;
-
-    background: #f7f8fc;
-}
-
-
-/* =========================================================
-   HEADER
-========================================================= */
-
-.header {
-    width: 100%;
-
-    min-height: 76px;
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    padding: 0 42px;
-
-    background: rgba(255, 255, 255, 0.95);
-
-    border-bottom: 1px solid #e5e7eb;
-
-    position: sticky;
-    top: 0;
-
-    z-index: 100;
-
-    backdrop-filter: blur(12px);
-}
-
-
-/* =========================================================
-   BRAND
-========================================================= */
-
-.header-brand {
-    display: flex;
-    align-items: center;
-
-    gap: 12px;
-}
-
-.header-logo {
-    width: 38px;
-    height: 38px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 11px;
-
-    background: linear-gradient(135deg,
-            #8b5cf6,
-            #6366f1);
-
-    color: white;
-
-    font-size: 18px;
-    font-weight: 700;
-
-    box-shadow:
-        0 5px 15px rgba(99, 102, 241, 0.22);
-}
-
-.header-title {
-    display: flex;
-    flex-direction: column;
-}
-
-.header-title h1 {
-    margin: 0;
-
-    font-size: 17px;
-    font-weight: 700;
-
-    letter-spacing: -0.3px;
-}
-
-.header-title span {
-    margin-top: 2px;
-
-    color: #9ca3af;
-
-    font-size: 10px;
-}
-
-
-/* =========================================================
-   HEADER RIGHT SIDE
-========================================================= */
-
-.header-status {
-    display: flex;
-    align-items: center;
-
-    gap: 8px;
-
-    padding: 8px 13px;
-
-    border: 1px solid #e5e7eb;
-
-    border-radius: 999px;
-
-    background: white;
-
-    color: #6b7280;
-
-    font-size: 11px;
-}
-
-.header-status-dot {
-    width: 7px;
-    height: 7px;
-
-    border-radius: 50%;
-
-    background: #22c55e;
-
-    box-shadow:
-        0 0 0 3px #dcfce7;
-}
-
-
-/* =========================================================
-   LOGOUT BUTTON
-========================================================= */
-
-.logout-button {
-    padding: 8px 15px;
-
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-
-    background: white;
-
-    color: #4b5563;
-
-    font-size: 12px;
-    font-weight: 600;
-
-    cursor: pointer;
-
-    transition:
-        background-color 0.2s ease,
-        border-color 0.2s ease,
-        color 0.2s ease,
-        box-shadow 0.2s ease;
-}
-
-.logout-button:hover {
-    background: #f9fafb;
-
-    border-color: #d1d5db;
-
-    color: #111827;
-
-    box-shadow:
-        0 2px 6px rgba(0, 0, 0, 0.06);
-}
-
-.logout-button:active {
-    transform: translateY(1px);
-}
-
-.logout-button:focus-visible {
-    outline: 2px solid #6366f1;
-    outline-offset: 2px;
-}
-
-
-/* =========================================================
-   MAIN CONTENT
-========================================================= */
-
-.content {
-    width: 100%;
-    min-width: 0;
-
-    margin: 0;
-
-    padding: 35px 42px 60px;
-
-    box-sizing: border-box;
-}
-
-
-/* =========================================================
-   CONTENT CONTAINER
-
-   IMPORTANT:
-   No max-width here.
-   This allows child components to use
-   the entire available screen.
-========================================================= */
-
-.content>* {
-    width: 100%;
-}
-
-
-/* =========================================================
-   RESPONSIVE
-========================================================= */
-
-@media (max-width: 800px) {
-
-    .header {
-        padding: 0 20px;
-    }
-
-    .content {
-        padding: 25px 20px 40px;
-    }
-}
-
-
-@media (max-width: 500px) {
-
-    .header {
-        min-height: 68px;
-
-        padding: 0 15px;
-    }
-
-    .header-status {
-        display: none;
-    }
-
-    .logout-button {
-        padding: 7px 11px;
-        font-size: 11px;
-    }
-
-    .content {
-        padding: 20px 14px 30px;
-    }
+:host { display: block; min-height: 100vh; }
+.app-shell { min-height: 100vh; background: var(--color-surface-soft); }
+.topbar { min-height: 78px; display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 0 clamp(20px, 5vw, 72px); background: rgba(255,255,255,.86); border-bottom: 1px solid var(--color-line); position: sticky; top: 0; z-index: 10; backdrop-filter: blur(18px); }
+.brand { display: flex; align-items: center; gap: 11px; color: inherit; text-decoration: none; }
+.brand-mark { width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; gap: 3px; border-radius: 12px; background: var(--color-primary); box-shadow: 0 7px 18px rgba(91,92,226,.2); }
+.brand-mark span { width: 4px; height: 15px; display: block; border-radius: 99px; background: white; }
+.brand-mark span:nth-child(2) { height: 21px; opacity: .8; }
+.brand-mark span:nth-child(3) { height: 11px; opacity: .6; }
+.brand-copy { display: flex; flex-direction: column; gap: 2px; }
+.brand-copy strong { font-size: 16px; letter-spacing: -.02em; }
+.brand-copy small { color: var(--color-subtle); font-size: 10px; letter-spacing: .02em; }
+.topbar-actions { display: flex; align-items: center; gap: 16px; }
+.workspace-status { display: flex; align-items: center; gap: 8px; color: var(--color-muted); font-size: 12px; }
+.workspace-status i { width: 7px; height: 7px; display: block; border-radius: 50%; background: #38a982; box-shadow: 0 0 0 4px #dff6ec; }
+.logout-button { display: inline-flex; align-items: center; gap: 10px; padding: 10px 13px; border: 1px solid var(--color-line); border-radius: 10px; background: var(--color-surface); color: var(--color-muted); font-size: 12px; font-weight: 650; cursor: pointer; transition: .2s ease; }
+.logout-button:hover { border-color: #cfd3ef; color: var(--color-primary-dark); background: #fafaff; transform: translateY(-1px); }
+.content { width: min(100% - 40px, var(--content-width)); margin: 0 auto; padding: 52px 0 72px; }
+.page-intro { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; margin-bottom: 28px; }
+.eyebrow { color: var(--color-primary); font-size: 10px; font-weight: 750; letter-spacing: .14em; }
+.page-intro h1 { max-width: 700px; margin: 10px 0 8px; font-size: clamp(28px, 4vw, 42px); line-height: 1.08; letter-spacing: -.045em; }
+.page-intro p { margin: 0; color: var(--color-muted); font-size: 15px; }
+.intro-note { display: inline-flex; align-items: center; gap: 8px; color: var(--color-muted); font-size: 12px; white-space: nowrap; }
+.intro-note span { color: var(--color-primary); font-size: 18px; }
+@media (max-width: 700px) {
+  .topbar { min-height: 70px; }
+  .workspace-status { display: none; }
+  .content { width: min(100% - 28px, var(--content-width)); padding-top: 34px; }
+  .page-intro { align-items: flex-start; flex-direction: column; margin-bottom: 22px; }
+  .intro-note { margin-top: -8px; }
 }

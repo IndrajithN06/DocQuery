@@ -4,18 +4,22 @@ using Microsoft.AspNetCore.Mvc;
 namespace DocQuery.Controllers;
 
 [ApiController]
+[Microsoft.AspNetCore.Authorization.Authorize]
 [Route("api/[controller]")]
 public class QdrantController : ControllerBase
 {
     private readonly QdrantService _qdrantService;
     private readonly ILlmService _llmService;
+    private readonly ICurrentUserService _currentUser;
 
     public QdrantController(
         QdrantService qdrantService,
-        ILlmService llmService)
+        ILlmService llmService,
+        ICurrentUserService currentUser)
     {
         _qdrantService = qdrantService;
         _llmService = llmService;
+        _currentUser = currentUser;
     }
 
     [HttpPost("create-collection")]
@@ -30,18 +34,6 @@ public class QdrantController : ControllerBase
         });
     }
 
-    [HttpDelete("reset")]
-    public async Task<IActionResult> Reset()
-    {
-        await _qdrantService.ResetCollectionAsync();
-
-        return Ok(new
-        {
-            message = "Qdrant collection reset successfully."
-        });
-    }
-
-
     [HttpPost("search")]
     public async Task<IActionResult> Search(
     [FromBody] SearchRequest request)
@@ -52,7 +44,8 @@ public class QdrantController : ControllerBase
         var results =
             await _qdrantService.SearchAsync(
                 queryEmbedding,
-                request.Limit);
+                request.Limit,
+                userId: _currentUser.UserId);
 
         return Ok(results);
     }

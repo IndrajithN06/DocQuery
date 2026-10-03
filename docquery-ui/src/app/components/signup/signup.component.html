@@ -1,12 +1,15 @@
-<div class="auth-container">
-
-    <div class="auth-card">
-
-        <h1>Create Account</h1>
-
-        <p class="subtitle">
-            Create your DocQuery account
-        </p>
+<main class="auth-page">
+    <section class="auth-visual">
+        <a class="auth-brand" routerLink="/signup"><span class="brand-mark"><i></i><i></i><i></i></span><strong>DocQuery</strong></a>
+        <div class="visual-copy"><span class="eyebrow">YOUR DOCUMENTS, UNLOCKED</span><h1>Turn reading into momentum.</h1><p>Create a private workspace for the files you need to understand, search, and revisit.</p></div>
+        <div class="visual-footer"><span>✦</span> Built for focused research</div>
+    </section>
+    <section class="auth-panel">
+        <div class="auth-card">
+            <div class="mobile-brand"><span class="brand-mark"><i></i><i></i><i></i></span><strong>DocQuery</strong></div>
+            <span class="eyebrow">GET STARTED</span>
+            <h1>Create your workspace</h1>
+            <p class="subtitle">A smarter home for the documents you work with.</p>
 
         <form (ngSubmit)="signup()">
 
@@ -16,8 +19,7 @@
                     Email
                 </label>
 
-                <input id="email" type="email" name="email" [(ngModel)]="email" placeholder="Enter your email"
-                    required />
+                    <input id="email" type="email" name="email" [(ngModel)]="email" placeholder="you@company.com" autocomplete="email" required />
 
             </div>
 
@@ -27,8 +29,7 @@
                     Password
                 </label>
 
-                <input id="password" type="password" name="password" [(ngModel)]="password"
-                    placeholder="Enter your password" required />
+                    <input id="password" type="password" name="password" [(ngModel)]="password" placeholder="At least 6 characters" autocomplete="new-password" required />
 
             </div>
 
@@ -38,8 +39,7 @@
                     Confirm Password
                 </label>
 
-                <input id="confirmPassword" type="password" name="confirmPassword" [(ngModel)]="confirmPassword"
-                    placeholder="Confirm your password" required />
+                    <input id="confirmPassword" type="password" name="confirmPassword" [(ngModel)]="confirmPassword" placeholder="Repeat your password" autocomplete="new-password" required />
 
             </div>
 
@@ -55,7 +55,7 @@
             </div>
             }
 
-            <button type="submit" [disabled]="loading">
+            <button class="primary-button" type="submit" [disabled]="loading">
 
                 @if (loading) {
                 Creating account...
@@ -67,16 +67,8 @@
 
         </form>
 
-        <p class="auth-link">
-
-            Already have an account?
-
-            <a routerLink="/login">
-                Login
-            </a>
-
-        </p>
-
-    </div>
-
-</div>
+            <p class="auth-link">Already have an account? <a routerLink="/login">Sign in <span>→</span></a></p>
+        </div>
+        <p class="legal-note">Your account keeps your workspace personal and secure.</p>
+    </section>
+</main>

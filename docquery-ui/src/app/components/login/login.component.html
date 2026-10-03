@@ -1,12 +1,15 @@
-<div class="auth-container">
-
-    <div class="auth-card">
-
-        <h1>Welcome Back</h1>
-
-        <p class="subtitle">
-            Login to your DocQuery account
-        </p>
+<main class="auth-page">
+    <section class="auth-visual">
+        <a class="auth-brand" routerLink="/login"><span class="brand-mark"><i></i><i></i><i></i></span><strong>DocQuery</strong></a>
+        <div class="visual-copy"><span class="eyebrow">A CLEARER WAY TO THINK</span><h1>Every answer starts with the right document.</h1><p>Bring your PDFs into one focused workspace and ask questions with confidence.</p></div>
+        <div class="visual-footer"><span>✦</span> Secure, private, and made for deep work</div>
+    </section>
+    <section class="auth-panel">
+        <div class="auth-card">
+            <div class="mobile-brand"><span class="brand-mark"><i></i><i></i><i></i></span><strong>DocQuery</strong></div>
+            <span class="eyebrow">WELCOME BACK</span>
+            <h1>Sign in to your workspace</h1>
+            <p class="subtitle">Pick up where you left off with your documents.</p>
 
         <form (ngSubmit)="login()">
 
@@ -16,8 +19,7 @@
                     Email
                 </label>
 
-                <input id="email" type="email" name="email" [(ngModel)]="email" placeholder="Enter your email"
-                    required />
+                    <input id="email" type="email" name="email" [(ngModel)]="email" placeholder="you@company.com" autocomplete="email" required />
 
             </div>
 
@@ -27,8 +29,7 @@
                     Password
                 </label>
 
-                <input id="password" type="password" name="password" [(ngModel)]="password"
-                    placeholder="Enter your password" required />
+                    <input id="password" type="password" name="password" [(ngModel)]="password" placeholder="Your password" autocomplete="current-password" required />
 
             </div>
 
@@ -38,7 +39,7 @@
             </div>
             }
 
-            <button type="submit" [disabled]="loading">
+            <button class="primary-button" type="submit" [disabled]="loading">
 
                 @if (loading) {
                 Logging in...
@@ -50,16 +51,8 @@
 
         </form>
 
-        <p class="auth-link">
-
-            Don't have an account?
-
-            <a routerLink="/signup">
-                Create account
-            </a>
-
-        </p>
-
-    </div>
-
-</div>
+            <p class="auth-link">Don't have an account? <a routerLink="/signup">Create an account <span>→</span></a></p>
+        </div>
+        <p class="legal-note">By continuing, you agree to use DocQuery responsibly.</p>
+    </section>
+</main>

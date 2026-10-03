@@ -13,8 +13,9 @@ export class DocumentUploadComponent {
 
   selectedFile: File | null = null;
   uploading = false;
+  deletingDocumentId: string | null = null;
+  dragActive = false;
   message = '';
-  documentList: documentlist[] = [];
 
 
 
@@ -22,11 +23,7 @@ export class DocumentUploadComponent {
   constructor(private api: DocqueryApiService, public documentState: DocumentStateService) { }
 
   ngOnInit(): void {
-    this.api.getDocumentList().subscribe({
-      next: documentList => {
-        this.documentList = documentList;
-      }
-    });
+    this.refreshDocuments();
   }
 
   onFileSelected(event: Event): void {
@@ -35,6 +32,28 @@ export class DocumentUploadComponent {
     if (input.files && input.files.length > 0) {
       this.selectedFile = input.files[0];
       this.message = '';
+    }
+  }
+
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    this.dragActive = true;
+  }
+
+  onDragLeave(): void {
+    this.dragActive = false;
+  }
+
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    this.dragActive = false;
+    const file = event.dataTransfer?.files.item(0);
+
+    if (file?.type === 'application/pdf' || file?.name.toLowerCase().endsWith('.pdf')) {
+      this.selectedFile = file;
+      this.message = '';
+    } else if (file) {
+      this.message = 'Please choose a PDF file.';
     }
   }
 
@@ -50,11 +69,13 @@ export class DocumentUploadComponent {
     this.api.uploadDocument(this.selectedFile).subscribe({
       next: response => {
         this.uploading = false;
+        this.selectedFile = null;
 
         this.message =
           `${response.fileName} uploaded successfully. ` +
           `${response.chunkCount} chunks indexed.` +
           `${response.documentId} Document ID.`;
+        this.refreshDocuments();
       },
       error: error => {
         this.uploading = false;
@@ -68,5 +89,36 @@ export class DocumentUploadComponent {
   selectDocument(document: documentlist): void {
     this.documentState.selectedDocumentId.set(document.documentId);
 
+  }
+
+  deleteDocument(document: documentlist): void {
+    if (!window.confirm(`Delete "${document.documentName}"?`)) {
+      return;
+    }
+
+    this.deletingDocumentId = document.documentId;
+    this.message = '';
+
+    this.api.deleteDocument(document.documentId).subscribe({
+      next: () => {
+        this.deletingDocumentId = null;
+        this.message = `${document.documentName} deleted.`;
+        this.refreshDocuments();
+      },
+      error: error => {
+        this.deletingDocumentId = null;
+        console.error(error);
+        this.message = 'Delete failed.';
+      }
+    });
+  }
+
+  private refreshDocuments(): void {
+    this.documentState.refreshDocuments(this.api).subscribe({
+      error: error => {
+        console.error(error);
+        this.message = 'Unable to load documents.';
+      }
+    });
   }
 }

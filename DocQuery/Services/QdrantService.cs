@@ -52,6 +52,15 @@ public class QdrantService
                 PayloadSchemaType.Keyword
             );
         }
+
+        if (!collectionInfo.PayloadSchema.ContainsKey("userId"))
+        {
+            await _client.CreatePayloadIndexAsync(
+                CollectionName,
+                "userId",
+                PayloadSchemaType.Keyword
+            );
+        }
     }
 
     public async Task ResetCollectionAsync()
@@ -73,7 +82,8 @@ public class QdrantService
     string text,
     string documentName,
     int pageNumber,
-    Guid documentId)
+    Guid documentId,
+    string userId)
     {
         var point = new PointStruct
         {
@@ -87,7 +97,8 @@ public class QdrantService
             ["text"] = text,
             ["document"] = documentName,
             ["pageNumber"]= pageNumber,
-            ["documentId"]= documentId.ToString()
+            ["documentId"]= documentId.ToString(),
+            ["userId"] = userId
         }
         };
 
@@ -100,7 +111,7 @@ public class QdrantService
     }
 
 
-    public async Task<List<DocumentList>> GetAllDocumentsAsync()
+    public async Task<List<DocumentList>> GetAllDocumentsAsync(string userId)
     {
         var uniqueDocuments = new Dictionary<string, string>();
 
@@ -111,7 +122,8 @@ public class QdrantService
             var result = await _client.ScrollAsync(
                 collectionName: CollectionName,
                 limit: 100,
-                offset: offset
+                offset: offset,
+                filter: BuildFilter(userId)
             );
 
             foreach (var point in result.Result)
@@ -148,30 +160,13 @@ public class QdrantService
     public async Task<List<SearchResult>> SearchAsync(
         float[] queryEmbedding,
         ulong limit = 3,
-        string documentId = "")
+        string documentId = "",
+        string userId = "")
     {
-        var filter = new Filter
-        {
-            Must =
-        {
-            new Condition
-            {
-                Field = new FieldCondition
-                {
-                    Key = "documentId",
-                    Match = new Match
-                    {
-                        Keyword = documentId
-                    }
-                }
-            }
-        }
-        };
-
         var results = await _client.SearchAsync(
             CollectionName,
             queryEmbedding,
-            filter: filter,
+            filter: BuildFilter(userId, documentId),
             limit: limit);
 
         return results
@@ -200,5 +195,50 @@ public class QdrantService
                 };
             })
             .ToList();
+    }
+
+    public async Task<bool> DocumentBelongsToUserAsync(Guid documentId, string userId)
+    {
+        var result = await _client.ScrollAsync(
+            collectionName: CollectionName,
+            filter: BuildFilter(userId, documentId.ToString()),
+            limit: 1,
+            offset: default);
+
+        return result.Result.Count > 0;
+    }
+
+    public async Task DeleteDocumentAsync(Guid documentId, string userId)
+    {
+        await _client.DeleteAsync(
+            CollectionName,
+            BuildFilter(userId, documentId.ToString()));
+    }
+
+    private static Filter BuildFilter(string userId, string? documentId = null)
+    {
+        var filter = new Filter();
+        filter.Must.Add(new Condition
+        {
+            Field = new FieldCondition
+            {
+                Key = "userId",
+                Match = new Match { Keyword = userId }
+            }
+        });
+
+        if (!string.IsNullOrWhiteSpace(documentId))
+        {
+            filter.Must.Add(new Condition
+            {
+                Field = new FieldCondition
+                {
+                    Key = "documentId",
+                    Match = new Match { Keyword = documentId }
+                }
+            });
+        }
+
+        return filter;
     }
 }

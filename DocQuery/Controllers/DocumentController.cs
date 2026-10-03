@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace DocQuery.Controllers;
 
 [ApiController]
+[Microsoft.AspNetCore.Authorization.Authorize]
 [Route("api/[controller]")]
 public class DocumentController : ControllerBase
 {
@@ -12,13 +13,20 @@ public class DocumentController : ControllerBase
     private readonly TextChunker _textChunker;
     private readonly ILlmService _llmService;
     private readonly QdrantService _qdrantService;
+    private readonly ICurrentUserService _currentUser;
 
-    public DocumentController(PdfService pdfService ,TextChunker textChunker,QdrantService qdrantService, ILlmService llmService)
+    public DocumentController(
+        PdfService pdfService,
+        TextChunker textChunker,
+        QdrantService qdrantService,
+        ILlmService llmService,
+        ICurrentUserService currentUser)
     {
         _pdfService = pdfService;
         _textChunker=textChunker;
         _qdrantService = qdrantService;
         _llmService = llmService;
+        _currentUser = currentUser;
 
     }
 
@@ -47,6 +55,7 @@ public class DocumentController : ControllerBase
         var startId = (ulong)DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
         Guid documentId = Guid.NewGuid();
+        var userId = _currentUser.UserId;
 
         // 3. Generate embeddings and store each chunk
         for (var i = 0; i < chunks.Count; i++)
@@ -62,7 +71,8 @@ public class DocumentController : ControllerBase
                 text: chunk.Text,
                 documentName: file.FileName,
                 pageNumber: chunk.PageNumber,
-                documentId: documentId
+                documentId: documentId,
+                userId: userId
                 );
         }
 
@@ -78,7 +88,21 @@ public class DocumentController : ControllerBase
     [HttpGet("list-documents")]
     public async Task<IActionResult> List()
     {
-        var documents = await _qdrantService.GetAllDocumentsAsync();
+        var documents = await _qdrantService.GetAllDocumentsAsync(_currentUser.UserId);
         return Ok(documents);
+    }
+
+    [HttpDelete("{documentId:guid}")]
+    public async Task<IActionResult> Delete(Guid documentId)
+    {
+        var userId = _currentUser.UserId;
+
+        if (!await _qdrantService.DocumentBelongsToUserAsync(documentId, userId))
+        {
+            return NotFound();
+        }
+
+        await _qdrantService.DeleteDocumentAsync(documentId, userId);
+        return NoContent();
     }
 }

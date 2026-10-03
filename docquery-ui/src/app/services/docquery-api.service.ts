@@ -31,6 +31,12 @@ export class DocqueryApiService {
     );
   }
 
+  deleteDocument(documentId: string): Observable<void> {
+    return this.http.delete<void>(
+      `${this.apiUrl}/Document/${encodeURIComponent(documentId)}`
+    );
+  }
+
   askQuestion(question: string, documentId: string | null): Observable<ChatResponse> {
     return this.http.post<ChatResponse>(
       `${this.apiUrl}/Rag/ask`,

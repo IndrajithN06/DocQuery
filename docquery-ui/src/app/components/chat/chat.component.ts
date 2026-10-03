@@ -19,7 +19,7 @@ export class ChatComponent {
   sources: ChatSource[] = [];
   asking = false;
 
-  constructor(private api: DocqueryApiService, private documentState: DocumentStateService) { }
+  constructor(private api: DocqueryApiService, public documentState: DocumentStateService) { }
 
   ask(): void {
     if (!this.question.trim()) {
